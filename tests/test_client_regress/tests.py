@@ -1039,9 +1039,21 @@ class ContextTests(TestDataMixin, TestCase):
             response = self.client.get("/request_context_view/")
             self.assertContains(response, 'Path: /request_context_view/')
 
-    def test_nested_requests(self):
+    @override_settings(MIDDLEWARE_CLASSES=("tests.test_client_regress.middleware.RedirectInRequestMiddleware", ))
+    def test_nested_requests_with_request_redirect(self):
         """
-        response.context is not lost when view call another view.
+        response.context is not lost when a view calls another view which is
+        redirected in the process_request method of a middleware class.
+        """
+        response = self.client.get("/nested_view/")
+        self.assertEqual(response.context.__class__, Context)
+        self.assertEqual(response.context['nested'], 'yes')
+
+    @override_settings(MIDDLEWARE_CLASSES=("tests.test_client_regress.middleware.RedirectInResponseMiddleware", ))
+    def test_nested_requests_with_response_redirect(self):
+        """
+        response.context is not lost when a view calls another view which is
+        redirected in the process_response method of a middleware class.
         """
         response = self.client.get("/nested_view/")
         self.assertEqual(response.context.__class__, Context)

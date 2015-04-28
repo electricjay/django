@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'', include('test_client.urls')),
 
     url(r'^no_template_view/$', views.no_template_view),
+    url(r'^REDIRECTED$', views.no_template_view),
     url(r'^staff_only/$', views.staff_only_view),
     url(r'^get_view/$', views.get_view),
     url(r'^request_data/$', views.request_data),
